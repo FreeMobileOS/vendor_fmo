@@ -43,7 +43,7 @@ PRODUCT_PACKAGES += \
 
 
 # TODO : Bootanimation
-     PRODUCT_COPY_FILES += vendor/fmo/media/bootanimation_720.zip:system/media/bootanimation.zip
+     PRODUCT_COPY_FILES += vendor/fmo/media/bootanimation.zip:system/media/bootanimation.zip
 
 # Fonts
 PRODUCT_COPY_FILES += \
