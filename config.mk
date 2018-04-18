@@ -36,7 +36,11 @@ PRODUCT_PACKAGES += \
     kdeconnect-android \
     amazefilemanager \
 	mintube \
-    webtube
+	GmsCore \
+	GsfProxy \
+	FakeStore
+
+
 
 # TODO : Bootanimation
      PRODUCT_COPY_FILES += vendor/fmo/media/bootanimation_720.zip:system/media/bootanimation.zip
