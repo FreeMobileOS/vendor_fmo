@@ -41,6 +41,10 @@ PRODUCT_PACKAGES += \
 	FakeStore
 
 
+# UnifiedNlp plugins
+PRODUCT_PACKAGES += \
+	NominatimGeocoderBackend \
+	IchnaeaNlpBackend
 
 # TODO : Bootanimation
      PRODUCT_COPY_FILES += vendor/fmo/media/bootanimation.zip:system/media/bootanimation.zip
