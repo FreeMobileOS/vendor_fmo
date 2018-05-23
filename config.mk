@@ -35,10 +35,10 @@ PRODUCT_PACKAGES += \
     apkmirror \
     kdeconnect-android \
     amazefilemanager \
-	mintube \
 	GmsCore \
 	GsfProxy \
-	FakeStore
+	FakeStore \
+	newpipe
 
 
 # UnifiedNlp plugins
