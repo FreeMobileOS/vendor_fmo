@@ -38,6 +38,7 @@ PRODUCT_PACKAGES += \
 	GmsCore \
 	GsfProxy \
 	FakeStore \
+	Updater \
 	newpipe
 
 
