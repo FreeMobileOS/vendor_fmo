@@ -32,6 +32,7 @@ PRODUCT_PACKAGES += \
     yalpstore \
     opencamera \
     fdroidclient \
+    FDroidPrivilegedExtension \
     apkmirror \
     kdeconnect-android \
     amazefilemanager \
