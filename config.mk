@@ -40,7 +40,8 @@ PRODUCT_PACKAGES += \
 	GsfProxy \
 	FakeStore \
 	Updater \
-	newpipe
+    newpipe \
+    flite-tts
 
 
 # UnifiedNlp plugins
