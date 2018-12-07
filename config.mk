@@ -41,7 +41,8 @@ PRODUCT_PACKAGES += \
 	FakeStore \
 	Updater \
     newpipe \
-    flite-tts
+    flite-tts \
+    su
 
 
 # UnifiedNlp plugins
