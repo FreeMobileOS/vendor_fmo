@@ -42,7 +42,8 @@ PRODUCT_PACKAGES += \
 	Updater \
     newpipe \
     flite-tts \
-    su
+    su \
+	davx5-ose
 
 
 # UnifiedNlp plugins
