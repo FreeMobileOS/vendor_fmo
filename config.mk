@@ -43,8 +43,8 @@ PRODUCT_PACKAGES += \
     newpipe \
     flite-tts \
     su \
-	davx5-ose
-
+	davx5-ose \
+	simple-app-launcher
 
 # UnifiedNlp plugins
 PRODUCT_PACKAGES += \
