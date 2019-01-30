@@ -69,3 +69,7 @@ PRODUCT_COPY_FILES += \
 # Include package overlays
 PRODUCT_PACKAGE_OVERLAYS += \
     vendor/fmo/overlay/common/
+
+# some fmo variables
+# TODO: Move branding.mk to vendor/fmo in future
+$(call inherit-product, vendor/aosp/config/branding.mk)
