@@ -44,7 +44,9 @@ PRODUCT_PACKAGES += \
     flite-tts \
     su \
 	davx5-ose \
-	simple-app-launcher
+	simple-app-launcher \
+	Launcher3QuickStep \
+	Launcher3QuickStepLib
 
 # UnifiedNlp plugins
 PRODUCT_PACKAGES += \
