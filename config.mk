@@ -46,7 +46,8 @@ PRODUCT_PACKAGES += \
 	davx5-ose \
 	simple-app-launcher \
 	Launcher3QuickStep \
-	Launcher3QuickStepLib
+	Launcher3QuickStepLib \
+	riot-android
 
 # UnifiedNlp plugins
 PRODUCT_PACKAGES += \
