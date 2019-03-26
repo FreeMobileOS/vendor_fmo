@@ -47,7 +47,8 @@ PRODUCT_PACKAGES += \
 	simple-app-launcher \
 	Launcher3QuickStep \
 	Launcher3QuickStepLib \
-	riot-android
+	riot-android \
+	nextcloud
 
 # UnifiedNlp plugins
 PRODUCT_PACKAGES += \
