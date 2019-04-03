@@ -48,7 +48,8 @@ PRODUCT_PACKAGES += \
 	Launcher3QuickStep \
 	Launcher3QuickStepLib \
 	riot-android \
-	nextcloud
+	nextcloud \
+	chromium-customization-provider
 
 # UnifiedNlp plugins
 PRODUCT_PACKAGES += \
