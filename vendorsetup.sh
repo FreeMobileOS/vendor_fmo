@@ -1,4 +1,4 @@
-fmo_devices=('angler' 'mido' )
+fmo_devices=('angler' 'mido' 'hikey' )
 
 function lunch_devices() {
     add_lunch_combo fmo_${device}-user
