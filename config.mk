@@ -50,7 +50,8 @@ PRODUCT_PACKAGES += \
 	riot-android \
 	nextcloud \
 	chromium-customization-provider \
-	pdfviewer
+	pdfviewer \
+	telegramchat
 
 # UnifiedNlp plugins
 PRODUCT_PACKAGES += \
