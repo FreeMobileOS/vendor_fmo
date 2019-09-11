@@ -227,33 +227,7 @@ ifeq ($(TARGET_KERNEL_CLANG_COMPILE),true)
     else ifeq ($(KERNEL_ARCH),x86)
         KERNEL_CLANG_TRIPLE ?= CLANG_TRIPLE=x86_64-linux-gnu-
     endif
-endif
-
-# Initialize ccache  as an empty argument.
-ccache :=
-
-# Fill the ccache argument if USE_CCACHE is not set to false.
-ifneq ($(filter-out false,$(USE_CCACHE)),)
-    # Detect if the system already has ccache installed.
-    ccache := $(shell which ccache)
-
-    # Use the prebuilt one if host doesn't have ccache installed.
-    ifeq ($(ccache),)
-        ccache := $(BUILD_TOP)/prebuilts/misc/$(HOST_PREBUILT_TAG)/ccache/ccache
-        # Check that the executable is here.
-        ccache := $(strip $(wildcard $(ccache)))
-    endif
-
-    # Print which ccache is going to be used to build the Kernel.
-    $(info Using '$(ccache)' binary)
-else
-# Warn the developer if ccache is set to false.
-$(info The usage of ccache is set to '$(USE_CCACHE)')
-endif
-
-ifeq ($(TARGET_KERNEL_CLANG_COMPILE),true)
-    KERNEL_CROSS_COMPILE := CROSS_COMPILE="$(KERNEL_TOOLCHAIN_PATH)"
-	PATH_OVERRIDE := $(PATH_OVERRIDE):$(TARGET_KERNEL_CLANG_PATH) LD_LIBRARY_PATH=$(BUILD_TOP)/prebuilts/clang/host/$(HOST_OS)-x86/$(KERNEL_CLANG_VERSION)/lib64:$$LD_LIBRARY_PATH
+    PATH_OVERRIDE := $(PATH_OVERRIDE):$(TARGET_KERNEL_CLANG_PATH) LD_LIBRARY_PATH=$(BUILD_TOP)/prebuilts/clang/host/$(HOST_OS)-x86/$(KERNEL_CLANG_VERSION)/lib64:$$LD_LIBRARY_PATH
     ifeq ($(KERNEL_CC),)
         ifneq ($(USE_CCACHE),)
             KERNEL_CC := CC="$(CCACHE_EXEC) clang"
