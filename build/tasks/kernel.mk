@@ -21,8 +21,6 @@
 #
 # These config vars are usually set in BoardConfig.mk:
 #
-#   TARGET_KERNEL_SOURCE               = Kernel source dir, optional, defaults
-#                                        to kernel/$(TARGET_DEVICE_DIR)
 #   TARGET_KERNEL_CONFIG               = Kernel defconfig
 #   TARGET_KERNEL_VARIANT_CONFIG       = Variant defconfig, optional
 #   TARGET_KERNEL_SELINUX_CONFIG       = SELinux defconfig, optional
@@ -51,19 +49,13 @@
 #                                                      aarch64-linux-gnu- for arm64
 #                                                      x86_64-linux-gnu- for x86
 #
-#   USE_CCACHE                         = Enable ccache (global Android flag)
-#
 #   NEED_KERNEL_MODULE_ROOT            = Optional, if true, install kernel
 #                                          modules in root instead of system
 
 
 ifneq ($(TARGET_NO_KERNEL),true)
 
-TARGET_AUTO_KDIR := $(shell echo $(TARGET_DEVICE_DIR) | sed -e 's/^device/kernel/g')
-
 ## Externally influenced variables
-# kernel location - optional, defaults to kernel/<vendor>/<device>
-TARGET_KERNEL_SOURCE ?= $(TARGET_AUTO_KDIR)
 KERNEL_SRC := $(TARGET_KERNEL_SOURCE)
 # kernel configuration - mandatory
 KERNEL_DEFCONFIG := $(TARGET_KERNEL_CONFIG)
@@ -74,12 +66,6 @@ SELINUX_DEFCONFIG := $(TARGET_KERNEL_SELINUX_CONFIG)
 KERNEL_OUT := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ
 KERNEL_CONFIG := $(KERNEL_OUT)/.config
 
-TARGET_KERNEL_ARCH := $(strip $(TARGET_KERNEL_ARCH))
-ifeq ($(TARGET_KERNEL_ARCH),)
-KERNEL_ARCH := $(TARGET_ARCH)
-else
-KERNEL_ARCH := $(TARGET_KERNEL_ARCH)
-endif
 KERNEL_DEFCONFIG_SRC := $(KERNEL_SRC)/arch/$(KERNEL_ARCH)/configs/$(KERNEL_DEFCONFIG)
 
 ifeq ($(KERNEL_ARCH),x86_64)
@@ -88,18 +74,6 @@ else
 KERNEL_DEFCONFIG_ARCH := $(KERNEL_ARCH)
 endif
 KERNEL_DEFCONFIG_SRC := $(KERNEL_SRC)/arch/$(KERNEL_DEFCONFIG_ARCH)/configs/$(KERNEL_DEFCONFIG)
-
-TARGET_KERNEL_HEADER_ARCH := $(strip $(TARGET_KERNEL_HEADER_ARCH))
-ifeq ($(TARGET_KERNEL_HEADER_ARCH),)
-KERNEL_HEADER_ARCH := $(KERNEL_ARCH)
-else
-KERNEL_HEADER_ARCH := $(TARGET_KERNEL_HEADER_ARCH)
-endif
-
-KERNEL_HEADER_DEFCONFIG := $(strip $(KERNEL_HEADER_DEFCONFIG))
-ifeq ($(KERNEL_HEADER_DEFCONFIG),)
-KERNEL_HEADER_DEFCONFIG := $(KERNEL_DEFCONFIG)
-endif
 
 ifneq ($(TARGET_PREBUILT_KERNEL),)
     ifeq ($(BOARD_KERNEL_IMAGE_NAME),)
@@ -113,19 +87,6 @@ ifneq ($(TARGET_KERNEL_APPEND_DTB),)
 $(error TARGET_KERNEL_APPEND_DTB is deprecated.)
 endif
 TARGET_PREBUILT_INT_KERNEL := $(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/$(BOARD_KERNEL_IMAGE_NAME)
-
-# Clear this first to prevent accidental poisoning from env
-MAKE_FLAGS :=
-
-ifeq ($(KERNEL_ARCH),arm)
-  # Avoid "Unknown symbol _GLOBAL_OFFSET_TABLE_" errors
-  MAKE_FLAGS += CFLAGS_MODULE="-fno-pic"
-endif
-
-ifeq ($(KERNEL_ARCH),arm64)
-  # Avoid "unsupported RELA relocation: 311" errors (R_AARCH64_ADR_GOT_PAGE)
-  MAKE_FLAGS += CFLAGS_MODULE="-fno-pic"
-endif
 
 ifneq ($(TARGET_KERNEL_ADDITIONAL_CONFIG),)
 KERNEL_ADDITIONAL_CONFIG := $(TARGET_KERNEL_ADDITIONAL_CONFIG)
@@ -223,8 +184,6 @@ ifeq ($(TARGET_KERNEL_CLANG_COMPILE),true)
         KERNEL_CLANG_VERSION := $(LLVM_PREBUILTS_VERSION)
     endif
     TARGET_KERNEL_CLANG_PATH ?= $(BUILD_TOP)/prebuilts/clang/host/$(HOST_OS)-x86/$(KERNEL_CLANG_VERSION)/bin
-    KBUILD_COMPILER_STRING := $(shell $(TARGET_KERNEL_CLANG_PATH)/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')
-    export KBUILD_COMPILER_STRING
     ifeq ($(KERNEL_ARCH),arm64)
         KERNEL_CLANG_TRIPLE ?= CLANG_TRIPLE=aarch64-linux-gnu-
     else ifeq ($(KERNEL_ARCH),arm)
@@ -240,19 +199,10 @@ ifeq ($(TARGET_KERNEL_CLANG_COMPILE),true)
             KERNEL_CC := CC="clang"
         endif
     endif
-else
-    KERNEL_CROSS_COMPILE := CROSS_COMPILE="$(ccache) $(KERNEL_TOOLCHAIN_PATH)"
 endif
 
-# Needed for CONFIG_COMPAT_VDSO, safe to set for all arm64 builds
 ifeq ($(KERNEL_ARCH),arm64)
    KERNEL_CROSS_COMPILE += CROSS_COMPILE_ARM32="arm-linux-androideabi-"
-endif
-
-ccache =
-
-ifeq ($(HOST_OS),darwin)
-  MAKE_FLAGS += C_INCLUDE_PATH=$(BUILD_TOP)/external/elfutils/0.153/libelf/
 endif
 
 ifeq ($(TARGET_KERNEL_MODULES),)
@@ -313,53 +263,6 @@ INSTALLED_KERNEL_MODULES: depmod-host
 		fi
 
 $(TARGET_KERNEL_MODULES): $(TARGET_PREBUILT_INT_KERNEL)
-
-# Install kernel (uapi) headers.
-#
-# The dependency file serves two purposes:
-#  - It is a stamp indicating when the headers were last installed.
-#  - It contains a rule to regenerate itself when any kernel header
-#    files change.  This rule is identical to the rule emitted by
-#    GCC using the M/MM flags.
-#
-# Note that the location of installed kernel headers changed when the
-# kernel uapi system was introduced in 3.7.  Unfortunately, it is not
-# sufficient to test whether the uapi directories exist because some
-# kernels backport patches that contain uapi headers.  So we look for
-# the string "version_h" in the kernel makefile which was introduced
-# as a part of the uapi system (commit d183e6f570f3).
--include $(KERNEL_HEADERS_INSTALL_DEPS)
-$(KERNEL_HEADERS_INSTALL_DEPS):
-	@echo "Building Kernel Headers"
-	$(hide) mkdir -p $(KERNEL_OUT)
-	$(hide) rm -f $@
-	$(hide) $(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) headers_install
-	$(hide) echo "$@: \\" > $@
-	$(hide) ( cd $(KERNEL_SRC); \
-		if grep -q '^version_h' 'Makefile'; then \
-			depdirs="arch/$(KERNEL_ARCH)/include/uapi include/uapi"; \
-		else \
-			depdirs="arch/$(KERNEL_ARCH)/include/asm include"; \
-		fi; \
-		deps="Makefile $$(find $$depdirs -type f -name '*.h')"; \
-		for f in $$deps; do \
-			echo "  $(KERNEL_SRC)/$$f \\" >> $@; \
-		done ; \
-		echo "" >> $@ ; \
-		for f in $$deps; do \
-			echo "$(KERNEL_SRC)/$$f:" >> $@; \
-			echo "" >> $@; \
-		done \
-		)
-
-.PHONY: INSTALLED_KERNEL_HEADERS
-INSTALLED_KERNEL_HEADERS: $(KERNEL_HEADERS_INSTALL_DEPS)
-
-# Dependencies on $(KERNEL_OUT)/usr are deprecated
-$(KERNEL_HEADERS_INSTALL_DIR): $(KERNEL_HEADERS_INSTALL_DEPS)
-	@echo "Depending on $(KERNEL_HEADERS_INSTALL_DIR) is deprecated." 1>&2
-	@echo "Use INSTALLED_KERNEL_HEADERS instead." 1>&2
-	@exit 1
 
 .PHONY: kerneltags
 kerneltags: $(KERNEL_CONFIG)
