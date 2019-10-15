@@ -27,11 +27,6 @@
 #   TARGET_KERNEL_VARIANT_CONFIG       = Variant defconfig, optional
 #   TARGET_KERNEL_SELINUX_CONFIG       = SELinux defconfig, optional
 #   TARGET_KERNEL_ADDITIONAL_CONFIG    = Additional defconfig, optional
-#   TARGET_KERNEL_ARCH                 = Kernel Arch
-#   TARGET_KERNEL_CROSS_COMPILE_PREFIX = Compiler prefix (e.g. arm-eabi-)
-#                                          defaults to arm-linux-androidkernel- for arm
-#                                                      aarch64-linux-androidkernel- for arm64
-#                                                      x86_64-linux-androidkernel- for x86
 #
 #   TARGET_KERNEL_CLANG_COMPILE        = Compile kernel with clang, defaults to false
 #
@@ -47,13 +42,6 @@
 #                                          to the end of the image name.
 #                                          For example, for ARM devices,
 #                                          use zImage-dtb instead of zImage.
-#
-#   KERNEL_TOOLCHAIN_PREFIX            = Overrides TARGET_KERNEL_CROSS_COMPILE_PREFIX,
-#                                          Set this var in shell to override
-#                                          toolchain specified in BoardConfig.mk
-#   KERNEL_TOOLCHAIN                   = Path to toolchain, if unset, assumes
-#                                          TARGET_KERNEL_CROSS_COMPILE_PREFIX
-#                                          is in PATH
 #
 #   KERNEL_CC                          = The C Compiler used. This is automatically set based
 #                                          on whether the clang version is set, optional.
@@ -277,6 +265,7 @@ $(KERNEL_ADDITIONAL_CONFIG_OUT):
 	$(hide) cmp -s $(KERNEL_ADDITIONAL_CONFIG_SRC) $@ || cp $(KERNEL_ADDITIONAL_CONFIG_SRC) $@;
 
 $(KERNEL_CONFIG): $(KERNEL_DEFCONFIG_SRC) $(KERNEL_ADDITIONAL_CONFIG_OUT)
+	@echo "Building Kernel Config"
 	$(hide) mkdir -p $(KERNEL_OUT)
 	$(PATH_OVERRIDE) $(MAKE_PREBUILT) $(KERNEL_MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) VARIANT_DEFCONFIG=$(VARIANT_DEFCONFIG) SELINUX_DEFCONFIG=$(SELINUX_DEFCONFIG) $(KERNEL_DEFCONFIG)
 	$(hide) if [ ! -z "$(KERNEL_CONFIG_OVERRIDE)" ]; then \
