@@ -34,7 +34,10 @@ else:
     depsonly = None
 
 try:
-    device = product[product.index("_") + 1:]
+    if product[:4] == 'fmo_' or product[:5] == 'aosp_':
+        device = product[product.index("_") + 1:]
+    else:
+        device = product
 except:
     device = product
 
