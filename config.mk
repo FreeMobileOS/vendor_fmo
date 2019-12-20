@@ -14,8 +14,6 @@
 
 # Default packages to be part of FMO
 PRODUCT_PACKAGES += \
-	Lawnchair \
-    Lawnfeed \
     open-keychain \
     k9mail \
     mapsme \
@@ -33,7 +31,7 @@ PRODUCT_PACKAGES += \
     opencamera \
     fdroidclient \
     FDroidPrivilegedExtension \
-    apkmirror \
+    apps \
     kdeconnect-android \
     amazefilemanager \
 	GmsCore \
@@ -45,13 +43,17 @@ PRODUCT_PACKAGES += \
     su \
 	davx5-ose \
 	simple-app-launcher \
-	Launcher3QuickStep \
-	Launcher3QuickStepLib \
 	riot-android \
 	nextcloud \
 	chromium-customization-provider \
 	pdfviewer \
-	telegramchat
+	telegramchat \
+	webview \
+	Quickstep \
+	Launcher3 \
+	Launcher3QuickStep \
+	librechair
+
 
 # UnifiedNlp plugins
 PRODUCT_PACKAGES += \
