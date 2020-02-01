@@ -52,7 +52,8 @@ PRODUCT_PACKAGES += \
 	Quickstep \
 	Launcher3 \
 	Launcher3QuickStep \
-	librechair
+	librechair \
+	aptoide
 
 
 # UnifiedNlp plugins
